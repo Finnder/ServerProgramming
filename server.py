@@ -1,5 +1,9 @@
 import socket 
 import threading
+from colorama import Fore, Back
+from colorama import init
+
+init(autoreset=True)
 
 HEADER = 64
 PORT = 5050
@@ -7,13 +11,12 @@ SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
-NICKNAME = ''
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
 def handle_client(conn, addr):
-    print(f"[NEW CONNECTION] {addr} connected.")
+    print(f"[NEW CONNECTION] {addr} | CONNECTED |")
 
     connected = True
     while connected:
@@ -24,7 +27,9 @@ def handle_client(conn, addr):
             if msg == DISCONNECT_MESSAGE:
                 connected = False
 
-            print(f"[{addr}] -> {msg}")
+
+            print(f"{msg}")
+            conn.send(f"{msg}".encode(FORMAT))
 
     conn.close()
         
@@ -36,7 +41,7 @@ def start():
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
-        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+        print(f" [ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
 
 
 print("[STARTING] server is starting...")
